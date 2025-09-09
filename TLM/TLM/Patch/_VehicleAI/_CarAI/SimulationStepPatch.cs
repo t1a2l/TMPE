@@ -37,6 +37,65 @@ namespace TrafficManager.Patch._VehicleAI._CarAI {
             var logParkingAi = false;
 #endif
 
+            // NON-STOCK CODE START
+            // Roadside Care integration
+            bool isRefueling = false;
+
+            bool isAtTunnelWashExit = false;
+
+            bool isAtHandWash = false;
+
+            bool isBeingRepaired = false;
+
+            // Find RoadsideCare assembly by name
+            Assembly RoadsideCareAssembly = Assembly.Load("RoadsideCare");
+
+            if (RoadsideCareAssembly != null) {
+
+                // Get the VehicleNeedsManager type
+                Type VehicleNeedsManager = RoadsideCareAssembly.GetType("RoadsideCare.Managers.VehicleNeedsManager");
+
+                if (VehicleNeedsManager != null) {
+
+                    // Get IsRefueling static method
+                    MethodInfo IsRefueling = VehicleNeedsManager.GetMethod("IsRefueling", BindingFlags.Public | BindingFlags.Static);
+
+                    if (IsRefueling != null) {
+                        // Pass the vehicle ID as an argument
+                        isRefueling = (bool)IsRefueling.Invoke(null, [vehicleID]);
+                    }
+
+                    // Get IsAtTunnelWash static method
+                    MethodInfo IsAtTunnelWashExit = VehicleNeedsManager.GetMethod("IsAtTunnelWashExit", BindingFlags.Public | BindingFlags.Static);
+
+                    if (IsAtTunnelWashExit != null) {
+                        // Pass the vehicle ID as an argument
+                        isAtTunnelWashExit = (bool)IsAtTunnelWashExit.Invoke(null, [vehicleID]);
+                    }
+
+                    // Get IsAtHandWash static method
+                    MethodInfo IsAtHandWash = VehicleNeedsManager.GetMethod("IsAtHandWash", BindingFlags.Public | BindingFlags.Static);
+
+                    if (IsAtHandWash != null) {
+                        // Pass the vehicle ID as an argument
+                        isAtHandWash = (bool)IsAtHandWash.Invoke(null, [vehicleID]);
+                    }
+
+                    // Get IsAtHandWash static method
+                    MethodInfo IsBeingRepaired = VehicleNeedsManager.GetMethod("IsBeingRepaired", BindingFlags.Public | BindingFlags.Static);
+
+                    if (IsBeingRepaired != null) {
+                        // Pass the vehicle ID as an argument
+                        isBeingRepaired = (bool)IsBeingRepaired.Invoke(null, [vehicleID]);
+                    }
+                }
+            }
+
+            if (isRefueling || isAtTunnelWashExit || isAtHandWash || isBeingRepaired) {
+                return true;
+            }
+            // NON-STOCK CODE END
+
             if ((data.m_flags & Vehicle.Flags.WaitingPath) != 0) {
                 PathManager pathManager = Singleton<PathManager>.instance;
                 byte pathFindFlags = pathManager.m_pathUnits.m_buffer[data.m_path].m_pathFindFlags;
