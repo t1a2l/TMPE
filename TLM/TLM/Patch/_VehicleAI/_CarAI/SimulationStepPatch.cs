@@ -25,10 +25,7 @@ namespace TrafficManager.Patch._VehicleAI._CarAI {
         public static MethodBase TargetMethod() => TranspilerUtil.DeclaredMethod<SimulationStepTargetDelegate>(typeof(CarAI), "SimulationStep");
 
         [UsedImplicitly]
-        public static bool Prefix(CarAI __instance,
-                                  ushort vehicleID,
-                                  ref Vehicle data,
-                                  Vector3 physicsLodRefPos) {
+        public static bool Prefix(CarAI __instance, ushort vehicleID, ref Vehicle data, Vector3 physicsLodRefPos) {
             #if DEBUG
             bool vehDebug = DebugSettings.VehicleId == 0
                            || DebugSettings.VehicleId == vehicleID;
@@ -48,45 +45,45 @@ namespace TrafficManager.Patch._VehicleAI._CarAI {
             bool isBeingRepaired = false;
 
             // Find RoadsideCare assembly by name
-            Assembly RoadsideCareAssembly = Assembly.Load("RoadsideCare");
+            Assembly roadsideCareAssembly = Assembly.Load("RoadsideCare");
 
-            if (RoadsideCareAssembly != null) {
+            if (roadsideCareAssembly != null) {
 
                 // Get the VehicleNeedsManager type
-                Type VehicleNeedsManager = RoadsideCareAssembly.GetType("RoadsideCare.Managers.VehicleNeedsManager");
+                Type vehicleNeedsManager = roadsideCareAssembly.GetType("RoadsideCare.Managers.VehicleNeedsManager");
 
-                if (VehicleNeedsManager != null) {
+                if (vehicleNeedsManager != null) {
 
                     // Get IsRefueling static method
-                    MethodInfo IsRefueling = VehicleNeedsManager.GetMethod("IsRefueling", BindingFlags.Public | BindingFlags.Static);
+                    MethodInfo isRefuelingMethodInfo = vehicleNeedsManager.GetMethod("IsRefueling", BindingFlags.Public | BindingFlags.Static);
 
-                    if (IsRefueling != null) {
+                    if (isRefuelingMethodInfo != null) {
                         // Pass the vehicle ID as an argument
-                        isRefueling = (bool)IsRefueling.Invoke(null, [vehicleID]);
+                        isRefueling = (bool)isRefuelingMethodInfo.Invoke(null, [vehicleID]);
                     }
 
                     // Get IsAtTunnelWash static method
-                    MethodInfo IsAtTunnelWashExit = VehicleNeedsManager.GetMethod("IsAtTunnelWashExit", BindingFlags.Public | BindingFlags.Static);
+                    MethodInfo isAtTunnelWashExitMethodInfo = vehicleNeedsManager.GetMethod("IsAtTunnelWashExit", BindingFlags.Public | BindingFlags.Static);
 
-                    if (IsAtTunnelWashExit != null) {
+                    if (isAtTunnelWashExitMethodInfo != null) {
                         // Pass the vehicle ID as an argument
-                        isAtTunnelWashExit = (bool)IsAtTunnelWashExit.Invoke(null, [vehicleID]);
+                        isAtTunnelWashExit = (bool)isAtTunnelWashExitMethodInfo.Invoke(null, [vehicleID]);
                     }
 
                     // Get IsAtHandWash static method
-                    MethodInfo IsAtHandWash = VehicleNeedsManager.GetMethod("IsAtHandWash", BindingFlags.Public | BindingFlags.Static);
+                    MethodInfo isAtHandWashMethodInfo = vehicleNeedsManager.GetMethod("IsAtHandWash", BindingFlags.Public | BindingFlags.Static);
 
-                    if (IsAtHandWash != null) {
+                    if (isAtHandWashMethodInfo != null) {
                         // Pass the vehicle ID as an argument
-                        isAtHandWash = (bool)IsAtHandWash.Invoke(null, [vehicleID]);
+                        isAtHandWash = (bool)isAtHandWashMethodInfo.Invoke(null, [vehicleID]);
                     }
 
                     // Get IsAtHandWash static method
-                    MethodInfo IsBeingRepaired = VehicleNeedsManager.GetMethod("IsBeingRepaired", BindingFlags.Public | BindingFlags.Static);
+                    MethodInfo isBeingRepairedMethodInfo = vehicleNeedsManager.GetMethod("IsBeingRepaired", BindingFlags.Public | BindingFlags.Static);
 
-                    if (IsBeingRepaired != null) {
+                    if (isBeingRepairedMethodInfo != null) {
                         // Pass the vehicle ID as an argument
-                        isBeingRepaired = (bool)IsBeingRepaired.Invoke(null, [vehicleID]);
+                        isBeingRepaired = (bool)isBeingRepairedMethodInfo.Invoke(null, [vehicleID]);
                     }
                 }
             }
